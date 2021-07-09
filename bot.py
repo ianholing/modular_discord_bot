@@ -17,7 +17,6 @@ import antonia
 class Metadonia:
     def __init__(self):
         self.client = discord.Client()
-        self.bot = commands.Bot(command_prefix='!')
         self.on_ready = self.client.event(self.on_ready)
         self.on_message = self.client.event(self.on_message)
         self.on_raw_reaction_add = self.client.event(self.on_raw_reaction_add)

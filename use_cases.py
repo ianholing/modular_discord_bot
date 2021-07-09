@@ -170,16 +170,16 @@ def _log_bonus_taco(user_id, date):
 def _notify_tacos_sent(receiver_id, amount, remaining, emoji):
     extra_text = ""
     if emoji != "🌮":
-        extra_text = f"equivalente a {amount} taco(s)"
-    message = f"¡<@!{receiver_id}> **ha recibido 1 x {emoji}** ({extra_text}) de tu parte! Te quedan {remaining} tacos para repartir hoy."
+        extra_text = f"(equivalente a {amount} taco(s)) "
+    message = f"¡<@!{receiver_id}> **ha recibido 1 x {emoji}** {extra_text}de tu parte! Te quedan {remaining} tacos para repartir hoy."
     return message
 
 
 def _notify_tacos_received(giver_id, amount, total, channel, emoji):
     extra_text = ""
     if emoji != "🌮":
-        extra_text = f"equivalente a {amount} taco(s)"
-    message = f"¡**Has recibido 1 x {emoji}** ({extra_text}) de <@!{giver_id}> en el canal <#{channel}>! Ya tienes **{total}x :taco:**"
+        extra_text = f"(equivalente a {amount} taco(s))"
+    message = f"¡**Has recibido 1 x {emoji}** {extra_text}de <@!{giver_id}> en el canal <#{channel}>! Ya tienes **{total}x :taco:**"
     return message
 
 
