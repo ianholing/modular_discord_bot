@@ -26,7 +26,7 @@ class Mstaco:
         print ("Waiting " + str(seconds_wait) + " to reset tacos message")
         await asyncio.sleep(seconds_wait)
         while True:
-            await self.main_channel.send(f"TIME THINGS --> get_today: {time_utils.get_today()}    get_yesterday:{time_utils.get_yesterday()}  get_lastweek:{time_utils.get_lastweek()}    get_prevweek:{time_utils.get_prevweek()}    get_time_left:{time_utils.get_time_left()}  is_weekend:{time_utils.is_weekend()}")
+            await self.test_channel.send(f"TIME THINGS --> get_today: {time_utils.get_today()}    get_yesterday:{time_utils.get_yesterday()}  get_lastweek:{time_utils.get_lastweek()}    get_prevweek:{time_utils.get_prevweek()}    get_time_left:{time_utils.get_time_left()}  is_weekend:{time_utils.is_weekend()}")
             msg = use_cases.reset_daily_tacos()
             time_utils.update_time()
             await self.main_channel.send(msg)
