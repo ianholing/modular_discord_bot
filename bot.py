@@ -1,20 +1,12 @@
-from dis import disco
-import os
-from discord.ext import tasks
-
 import discord
-from discord.ext import commands
 from config import DISCORD_TOKEN
 
 # MODULES
-import mstaco
-import antonia
+import modules.mstaco.mstaco as mstaco
+import modules.antonia.antonia as antonia
+import modules.reminder.reminder as reminder
 
-# import nest_asyncio
-# nest_asyncio.apply()
-# __import__('IPython').embed()
-
-class Metadonia:
+class Metabot:
     def __init__(self):
         self.client = discord.Client()
         self.on_ready = self.client.event(self.on_ready)
@@ -66,9 +58,10 @@ async def on_ready_logger(client):
 async def on_message_logger(client, message):
     print(f'Message \"{message.content}\" FROM: {message.author}')
 
-discord = Metadonia()
+discord = Metabot()
 discord.add_ready_listener(on_ready_logger)
 discord.add_message_listener(on_message_logger)
 discord.add_module(mstaco.Mstaco())
 discord.add_module(antonia.Antonia())
+discord.add_module(reminder.Reminder())
 discord.start()
