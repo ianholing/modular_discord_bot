@@ -25,3 +25,13 @@ HUGGINGFACE_TOKEN = "api_HUGGINGFACE"
 
 MIN_REMINDER_TIME = 60 * 60
 SHOW_REMINDER_CHANNEL = 999999999999999999
+HELP_TEXT = "La forma correcta de usar el bot de recuerdos es:  \r\n\
+```AYUDA: @Bot recuerda ayuda\r\n\
+INSERTAR: @Bot recuerda [userto], [text], [tag], [interval], [interval_launch_time], [counter]\r\n\
+ELIMINAR: @Bot recuerda borrar [userto | channel | tag | id]```  \r\n\
+EJEMPLOS:\r\n\
+@Bot recuerda[ a ] @manolo, ir a por patatas, #compra, 1w, 9:00, 0\r\n\
+@Bot recuerda[ a ] #general, Recordad que el viernes hay charla de , #alerts, 1d, 9:00, 5\r\n\
+@Bot recuerda[ a ] @maria, Vete a casa <-- Implicit launch only once: (#general, -, 18:00, 1)\r\n\
+@Bot recuerda[ a ] borrar 1245\r\n\
+@Bot recuerda[ a ] borrar #compra\r\n"
