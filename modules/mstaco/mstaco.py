@@ -5,7 +5,7 @@ from config import TEST_CHANNEL, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR, TACO
 import asyncio
 
 import utils.time_utils as time_utils
-import modules.mstaco.taco_use_cases as use_cases
+import modules.mstaco.use_cases as use_cases
 
 class Mstaco:
     def __init__(self):

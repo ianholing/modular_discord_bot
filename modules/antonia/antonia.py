@@ -28,6 +28,7 @@ class Antonia:
         self.random_reply_counter -= 1
         if self.random_reply_counter < 0:
             self.random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
+            print ("Next random reply in", self.random_reply_counter, "messages")
             response = self.evaluate_input(message.content)
             await message.channel.send(response)
             return
