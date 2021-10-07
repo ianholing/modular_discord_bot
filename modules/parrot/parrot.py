@@ -1,6 +1,6 @@
 import asyncio
 
-from config import TEST_CHANNEL, SHOW_REMINDER_CHANNEL
+from config import SHOW_PARROT_CHANNEL, TEST_CHANNEL
 
 class Parrot:
     def __init__(self):
@@ -9,7 +9,7 @@ class Parrot:
     async def on_ready(self, _client):
         self.client = _client
         self.test_channel = await self.client.fetch_channel(TEST_CHANNEL)
-        self.main_channel = await self.client.fetch_channel(SHOW_REMINDER_CHANNEL)
+        self.main_channel = await self.client.fetch_channel(SHOW_PARROT_CHANNEL)
 
     async def on_message(self, client, message):
         if message.author == client.user:
