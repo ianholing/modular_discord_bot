@@ -2,7 +2,7 @@ from tinydb import TinyDB, Query
 from tinydb.operations import add, subtract
 
 from config import DAILY_TACOS
-from utils.time_utils import get_yesterday, get_lastweek, get_prevweek
+from utils.time_utils import get_yesterday, get_thisweek, get_prevweek
 
 users_db = TinyDB('./db/users.json')
 logs_db = TinyDB('./db/logs.json')
@@ -38,7 +38,7 @@ class DBUser:
 
     @staticmethod
     def get_weekly_info():
-        return logs_db.search(Query().date.test(lambda x: x >= get_lastweek()))
+        return logs_db.search(Query().date.test(lambda x: x >= get_thisweek()))
 
     @staticmethod
     def get_prev_weekly_info():

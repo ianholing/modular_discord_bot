@@ -2,7 +2,7 @@ import operator
 import modules.mstaco.persistence as persistence
 
 from config import SKIP_LEADERBOARD_WEEKEND, DAILY_TACOS, GROUP_NAME
-from utils.time_utils import get_today, get_time_left, is_weekend
+from utils.time_utils import get_today, get_time_left, is_weekend, is_final_day
 
 
 def give_tacos(giver_id, receiver_id, given_tacos, reaction=False, channel=None, emoji="🌮"):
@@ -42,10 +42,6 @@ def reset_daily_tacos():
 
 
 def print_leaderboard():
-    if SKIP_LEADERBOARD_WEEKEND and is_weekend():
-        print("IS WEEKEND, LEADERBOARD SKIPPED")
-        return
-
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
 
@@ -70,22 +66,22 @@ def print_leaderboard():
     return message
 
 def print_weekly_leaderboard():
+    if SKIP_LEADERBOARD_WEEKEND and is_weekend():
+        print("IS WEEKEND, LEADERBOARD SKIPPED")
+        return ""
 
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
 
-    message = f"**¡DIVINE-INFO!** El número total de tacos repartidos esta semana en la comunidad es de **{daily_taco_count}x :taco: **\n"
+    message = f"**¡DIVINE-INFO!** El número total de tacos repartidos esta semana es de **{daily_taco_count}x :taco: **\n"
 
     db_list = persistence.DBUser.get_weekly_info()
     bots_id = [None, 'UGMETH49H']
 
-    is_final = False # Is the final leaderboard?
-
-    if len(db_list) == 0:
-        message += '**' + GROUP_NAME + ' Leaderboard Semanal Final de Tacos :taco:**\n'
+    is_final = is_final_day() # Is the final leaderboard?
+    if is_final:
+        message += '**' + GROUP_NAME + ' Leaderboard Final de Tacos :taco:**\n'
         db_list  = persistence.DBUser.get_prev_weekly_info()
-        is_final = True
-
     else:
         message += '**' + GROUP_NAME + ' Leaderboard Semanal de Tacos :taco:**\n'
 
