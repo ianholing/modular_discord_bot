@@ -7,7 +7,7 @@ from random import randint
 
 from config import HUGGINGFACE_TOKEN, MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER
 
-class Antonia:
+class Chatbot:
     random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
 
     def __init__(self):

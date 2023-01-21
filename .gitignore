@@ -2,6 +2,7 @@ config.py
 .history
 db/*.json
 test.py
+info.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

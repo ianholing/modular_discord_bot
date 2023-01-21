@@ -12,6 +12,8 @@ DAILY_TACOS = 5
 RESET_HOUR = 9  # UTC
 SHOW_LEADERBOARD_CHANNEL = 999999999999999998 # 833671405630652429 # GENERAL
 GROUP_NAME = "Comunidad test"
+TACO_NAME = "testpoints"
+TACO_EMOJI = ":taco:"
 RESET_DAY_OFFSET = 4 # Friday is our day to show tacos list (Offset from first day of the week starting from 0)
 TACO = {":taco:": 1, ":broccoli:": 1.5, ":medio_taco:": 0.5, ":beer:": 2, ":beer_mug:":2, ":-1:": -1, ":thumbs_down:": -1, ":cucumber:": 2, ":hot_pepper:": 1, ":test_tube:": 0}
 
