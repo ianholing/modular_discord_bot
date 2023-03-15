@@ -15,12 +15,17 @@ def to_thread(func: typing.Callable) -> typing.Coroutine:
 
 class Chatbot:
     random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
+    context_limit = 10
+    context = []
 
     def __init__(self):
         openai.api_key = CHATBOT_TOKEN
         pass
 
     async def on_message(self, client, message):
+        self.context.append({"role": "user", "content": message.author.name + ": " + self.parse_mentions(message.content.replace("\"", "\\\""), client)})
+        self.context = self.context[-self.context_limit:]
+        print("ACTUAL CONTEXT:", self.context)
         if message.author == client.user:
             return
 
@@ -47,12 +52,10 @@ class Chatbot:
     def evaluate_input(self, message, client, not_reply_on_fail=False):
         bot_input = self.parse_mentions(message.content.replace("\"", "\\\""), client)
         try:
+            messages = [{"role": "system", "content": CHATBOT_ROLE}, *self.context]
             resp = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": CHATBOT_ROLE},
-                    {"role": "user", "content": bot_input},
-                ]
+                messages=messages
             )
         except:
             return 'Estoy saturado déjame vivir' 
