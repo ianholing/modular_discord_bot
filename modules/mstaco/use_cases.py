@@ -1,7 +1,7 @@
 import operator
 import modules.mstaco.persistence as persistence
 
-from config import SKIP_LEADERBOARD_WEEKEND, DAILY_TACOS, GROUP_NAME, TACO_NAME
+from config import SKIP_LEADERBOARD_WEEKEND, DAILY_TACOS, GROUP_NAME, TACO_NAME, TACO_EMOJI
 from utils.time_utils import get_today, get_time_left, is_weekend, is_final_day
 
 
@@ -44,10 +44,8 @@ def reset_daily_tacos():
 def print_leaderboard():
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
-
-    message = f"**¡DIVINE-INFO!** El número total de {TACO_NAME} repartidos ayer en la comunidad es de **{daily_taco_count}x :taco: \n\n**"
-
-    message += '**' + GROUP_NAME + ' Leaderboard de Tacos :taco:**\n'
+    message = f"**¡DIVINE-INFO!** El número total de {TACO_NAME} repartidos ayer en la comunidad es de **{daily_taco_count}x {TACO_EMOJI} \n\n**"
+    message += '**' + GROUP_NAME + f' Leaderboard de {TACO_NAME} {TACO_EMOJI}**\n'
     db_list = persistence.DBUser.get_top_ranking()
     bots_id = [None, 'UGMETH49H']
 
@@ -73,7 +71,7 @@ def print_weekly_leaderboard():
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
 
-    message = f"**¡DIVINE-INFO!** El número total de tacos repartidos esta semana es de **{daily_taco_count}x :taco: **\n"
+    message = f"**¡DIVINE-INFO!** El número total de {TACO_NAME} repartidos esta semana es de **{daily_taco_count}x {TACO_EMOJI} **\n"
 
     db_list = persistence.DBUser.get_weekly_info()
     bots_id = [None, 'UGMETH49H']
@@ -131,10 +129,10 @@ def print_leaderboard_me(user):
 
     # If not in ranking, maybe it's a error or the user doesn't have tacos
     if user_taco is None:
-        message = f'**No apareces en nuestro registro de {TACO_NAME} :sad_parrot:. ¿Has recibido algún taco?**\n'
+        message = f'**No apareces en nuestro registro de {TACO_NAME} :sad_parrot:. ¿Has recibido algún {TACO_NAME}?**\n'
 
     else:
-        message = ":taco: Stats de <@!" + str(user.id) + ">:\n"
+        message = f"{TACO_EMOJI} Stats de <@!" + str(user.id) + ">:\n"
         message += "\t\t**Posición: ** `" +  str(user_taco['pos']) + "` \n"
         message += "\t\t**Tacos:    ** `" +  str(user_taco['info']['owned_tacos']) + "`  \n"
 
@@ -175,15 +173,15 @@ def _notify_tacos_received(giver_id, amount, total, channel, emoji):
     extra_text = ""
     if emoji != "🌮":
         extra_text = f"(equivalente a {amount} {TACO_NAME}(s))"
-    message = f"¡**Has recibido 1 x {emoji}** {extra_text}de <@!{giver_id}> en el canal <#{channel}>! Ya tienes **{total}x :taco:**"
+    message = f"¡**Has recibido 1 x {emoji}** {extra_text}de <@!{giver_id}> en el canal <#{channel}>! Ya tienes **{total}x {TACO_EMOJI}**"
     return message
 
 
 def _notify_not_enough_tacos(time_before_reset):
-    message = f"**¡No tienes suficientes {TACO_NAME}!** Recibirás {DAILY_TACOS} {TACO_NAME} NUEVOS :taco: recién cocinados en **{time_before_reset} horas.**"
+    message = f"**¡No tienes suficientes {TACO_NAME}!** Recibirás {DAILY_TACOS} {TACO_NAME} NUEVOS {TACO_EMOJI} recién cocinados en **{time_before_reset} horas.**"
     return message
 
 
 def _notify_bonus_taco(total):
-    message = f"¡Toma! Aquí tienes **1 {TACO_NAME} de premio por participar hoy en la comunidad**. Ya tienes **{total}x :taco: ** ¡Vuelve mañana a por más!"
+    message = f"¡Toma! Aquí tienes **1 {TACO_NAME} de premio por participar hoy en la comunidad**. Ya tienes **{total}x {TACO_EMOJI} ** ¡Vuelve mañana a por más!"
     return message

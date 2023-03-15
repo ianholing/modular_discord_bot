@@ -1,9 +1,8 @@
 from urllib import response
 
 ## HUGGING FACE
-import re
-from chatgpt_wrapper import ChatGPT
-import subprocess
+import json
+import requests
 from random import randint
 
 from config import HUGGINGFACE_TOKEN, MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER
@@ -12,7 +11,14 @@ class Chatbot:
     random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
 
     def __init__(self):
-        pass
+        self.API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-3B"
+        self.headers = {"Authorization": "Bearer " + HUGGINGFACE_TOKEN}
+
+    def api_query(self, payload):
+        data = json.dumps(payload)
+        response = requests.request("POST", self.API_URL, headers=self.headers, data=data)
+        print("RESPONSE: ", response)
+        return json.loads(response.content.decode("utf-8"))
 
     async def on_message(self, client, message):
         if message.author == client.user:
@@ -22,35 +28,25 @@ class Chatbot:
         self.random_reply_counter -= 1
         if self.random_reply_counter < 0:
             self.random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
-            print("Next random reply in", self.random_reply_counter, "messages")
-            response = self.evaluate_input(message.content, client)
+            print ("Next random reply in", self.random_reply_counter, "messages")
+            response = self.evaluate_input(message.content)
             await message.channel.send(response)
             return
 
         if client.user.mentioned_in(message):
-            response = self.evaluate_input(message.content, client)
+            response = self.evaluate_input(message.content.split('> ')[1])
             await message.channel.send(response)
 
-    def parse_mentions(self, input_text, client):
-        parsed_text = input_text.replace('<@'+str(client.user.id)+'>', "ChatGPT")
-        matches = re.findall(r'\<@([A-Za-z0-9_]+)\>', parsed_text)
-        for match in matches:
-            print("MATCH:", match)
-        return parsed_text
-
-    def evaluate_input(self, input_text, client):
-        bot_input = self.parse_mentions(input_text, client)
-        # bot = ChatGPT()
-        # return bot.ask(bot_input)
-
-        p = subprocess.Popen('timeout 60 chatgpt ' + bot_input, shell=True, stdout=subprocess.PIPE)
-        p.wait()
-        if p.returncode == 0:
-            resp = []
-            for line in p.stdout:
-                if len(line) > 1:
-                    resp.append(line.decode('utf-8'))
-            return ' '.join(resp)
-        else:
-                return 'Estoy saturado dejarme vivir'
+    def evaluate_input(self, input_text):
+        # response = evaluateOneInput(message.content, model=self.generator)
+        #text = "User: " + message.content.split('> ')[1] + "\nBot:"
+        print ("Infer with input: ", input_text)
+        text = self.api_query(input_text)
+        #response = text[0]['generated_text']
+        response = text['generated_text']
+        return response
+        # loop =  asyncio.get_event_loop()
+        # # task = loop.create_task(message.channel.send(response))
+        # # loop.run_until_complete(task)
+        # loop.run_until_complete(asyncio.gather(message.channel.send(response)))
             
