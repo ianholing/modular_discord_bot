@@ -3,6 +3,7 @@ config.py
 db/*.json
 test.py
 info.txt
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
