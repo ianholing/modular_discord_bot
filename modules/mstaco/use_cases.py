@@ -1,7 +1,7 @@
 import operator
 import modules.mstaco.persistence as persistence
 
-from config import SKIP_LEADERBOARD_WEEKEND, DAILY_TACOS, GROUP_NAME
+from config import SKIP_LEADERBOARD_WEEKEND, DAILY_TACOS, GROUP_NAME, TACO_NAME
 from utils.time_utils import get_today, get_time_left, is_weekend, is_final_day
 
 
@@ -24,7 +24,7 @@ def give_tacos(giver_id, receiver_id, given_tacos, reaction=False, channel=None,
 
 def give_bonus_taco_if_required(user_id):
     user = persistence.DBUser(user_id)
-    
+
 
     if user.requires_bonus_taco():
         user.add_tacos(1, bonus=True)
@@ -37,7 +37,7 @@ def reset_daily_tacos():
 
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
-    
+
     return print_weekly_leaderboard()
 
 
@@ -45,7 +45,7 @@ def print_leaderboard():
     # Compute all the tacos from yesterday.
     daily_taco_count = persistence.daily_taco_count()
 
-    message = f"**¡DIVINE-INFO!** El número total de tacos repartidos ayer en la comunidad es de **{daily_taco_count}x :taco: \n\n**"
+    message = f"**¡DIVINE-INFO!** El número total de {TACO_NAME} repartidos ayer en la comunidad es de **{daily_taco_count}x :taco: \n\n**"
 
     message += '**' + GROUP_NAME + ' Leaderboard de Tacos :taco:**\n'
     db_list = persistence.DBUser.get_top_ranking()
@@ -80,10 +80,10 @@ def print_weekly_leaderboard():
 
     is_final = is_final_day() # Is the final leaderboard?
     if is_final:
-        message += '**' + GROUP_NAME + ' Leaderboard Final de Tacos :taco:**\n'
+        message += f'**{GROUP_NAME} Leaderboard Final de {TACO_NAME} :taco:**\n'
         db_list  = persistence.DBUser.get_prev_weekly_info()
     else:
-        message += '**' + GROUP_NAME + ' Leaderboard Semanal de Tacos :taco:**\n'
+        message += f'**{GROUP_NAME} Leaderboard Semanal de {TACO_NAME} :taco:**\n'
 
     i = 1
     top_n = 10
@@ -116,7 +116,7 @@ def print_weekly_leaderboard():
             break
 
     if is_final:
-        message += "\n**¡Este ranking semanal de tacos está basado en milagros bíblicos inexplicables y ha sido reiniciado!**"
+        message += f"\n**¡Este ranking semanal de {TACO_NAME} está basado en milagros bíblicos inexplicables y ha sido reiniciado!**"
 
     return message
 
@@ -131,7 +131,7 @@ def print_leaderboard_me(user):
 
     # If not in ranking, maybe it's a error or the user doesn't have tacos
     if user_taco is None:
-        message = '**No apareces en nuestro registro de tacos :sad_parrot:. ¿Has recibido algún taco?**\n'
+        message = f'**No apareces en nuestro registro de {TACO_NAME} :sad_parrot:. ¿Has recibido algún taco?**\n'
 
     else:
         message = ":taco: Stats de <@!" + str(user.id) + ">:\n"
@@ -166,24 +166,24 @@ def _log_bonus_taco(user_id, date):
 def _notify_tacos_sent(receiver_id, amount, remaining, emoji):
     extra_text = ""
     if emoji != "🌮":
-        extra_text = f"(equivalente a {amount} taco(s)) "
-    message = f"¡<@!{receiver_id}> **ha recibido 1 x {emoji}** {extra_text}de tu parte! Te quedan {remaining} tacos para repartir hoy."
+        extra_text = f"(equivalente a {amount} {TACO_NAME}(s)) "
+    message = f"¡<@!{receiver_id}> **ha recibido 1 x {emoji}** {extra_text}de tu parte! Te quedan {remaining} {TACO_NAME} para repartir hoy."
     return message
 
 
 def _notify_tacos_received(giver_id, amount, total, channel, emoji):
     extra_text = ""
     if emoji != "🌮":
-        extra_text = f"(equivalente a {amount} taco(s))"
+        extra_text = f"(equivalente a {amount} {TACO_NAME}(s))"
     message = f"¡**Has recibido 1 x {emoji}** {extra_text}de <@!{giver_id}> en el canal <#{channel}>! Ya tienes **{total}x :taco:**"
     return message
 
 
 def _notify_not_enough_tacos(time_before_reset):
-    message = f"**¡No tienes suficientes tacos!** Recibirás {DAILY_TACOS} TACOS NUEVOS :taco: recién cocinados en **{time_before_reset} horas.**"
+    message = f"**¡No tienes suficientes {TACO_NAME}!** Recibirás {DAILY_TACOS} {TACO_NAME} NUEVOS :taco: recién cocinados en **{time_before_reset} horas.**"
     return message
 
 
 def _notify_bonus_taco(total):
-    message = f"¡Toma! Aquí tienes **1 TACO de premio por participar hoy en la comunidad**. Ya tienes **{total}x :taco: ** ¡Vuelve mañana a por más!"
+    message = f"¡Toma! Aquí tienes **1 {TACO_NAME} de premio por participar hoy en la comunidad**. Ya tienes **{total}x :taco: ** ¡Vuelve mañana a por más!"
     return message

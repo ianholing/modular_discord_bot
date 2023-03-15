@@ -3,13 +3,13 @@ from config import DISCORD_TOKEN
 
 # MODULES
 import modules.mstaco.mstaco as mstaco
-import modules.antonia.antonia as antonia
+import modules.chatbot.chatbot as chatbot
 import modules.reminder.reminder as reminder
 import modules.parrot.parrot as parrot
 
 class Metabot:
     def __init__(self):
-        self.client = discord.Client()
+        self.client = discord.Client(intents=discord.Intents.all())
         self.on_ready = self.client.event(self.on_ready)
         self.on_message = self.client.event(self.on_message)
         self.on_raw_reaction_add = self.client.event(self.on_raw_reaction_add)
@@ -58,6 +58,7 @@ async def on_ready_logger(client):
 
 async def on_message_logger(client, message):
     print(f'Message \"{message.content}\" FROM: {message.author}')
+    print(message)
 
 discord = Metabot()
 discord.add_ready_listener(on_ready_logger)
@@ -65,5 +66,5 @@ discord.add_message_listener(on_message_logger)
 discord.add_module(mstaco.Mstaco())
 discord.add_module(parrot.Parrot())
 discord.add_module(reminder.Reminder())
-discord.add_module(antonia.Antonia())
+discord.add_module(chatbot.Chatbot())
 discord.start()

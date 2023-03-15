@@ -1,7 +1,7 @@
 import re
 import emoji
-from emoji.core import emoji_lis
-from config import TEST_CHANNEL, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR, TACO
+from emoji.core import emoji_list
+from config import TEST_CHANNEL, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR, TACO, TACO_NAME
 import asyncio
 
 import utils.time_utils as time_utils
@@ -16,11 +16,11 @@ class Mstaco:
         self.test_channel = await self.client.fetch_channel(TEST_CHANNEL)
         self.main_channel = await self.client.fetch_channel(SHOW_LEADERBOARD_CHANNEL)
         self.client.loop.create_task(self.timer_reset_daily_tacos())
-        await self.test_channel.send(f"TIME THINGS --> get_today: {time_utils.get_today()}    get_yesterday:{time_utils.get_yesterday()}  get_thisweek:{time_utils.get_thisweek()}    get_prevweek:{time_utils.get_prevweek()}    get_time_left:{time_utils.get_time_left()}  is_weekend:{time_utils.is_weekend()}  is_final_day:{time_utils.is_final_day()}")
+        #await self.test_channel.send(f"TIME THINGS --> get_today: {time_utils.get_today()}    get_yesterday:{time_utils.get_yesterday()}  get_thisweek:{time_utils.get_thisweek()}    get_prevweek:{time_utils.get_prevweek()}    get_time_left:{time_utils.get_time_left()}  is_weekend:{time_utils.is_weekend()}  is_final_day:{time_utils.is_final_day()}")
 
     async def timer_reset_daily_tacos(self):
         seconds_wait = time_utils.seconds_to(RESET_HOUR, 0)
-        print ("Waiting " + str(seconds_wait) + " to reset tacos message")
+        print ("Waiting " + str(seconds_wait) + " to reset " + TACO_NAME + " message")
         await asyncio.sleep(seconds_wait)
         while True:
             await self.test_channel.send(f"TIME THINGS --> get_today: {time_utils.get_today()}    get_yesterday:{time_utils.get_yesterday()}  get_thisweek:{time_utils.get_thisweek()}    get_time_left:{time_utils.get_time_left()}  is_weekend:{time_utils.is_weekend()}  is_final_day:{time_utils.is_final_day()}")
@@ -40,7 +40,7 @@ class Mstaco:
 
     async def handle_message(self, client, message):
         given_tacos = 0
-        emoji_list = emoji.emoji_lis(message.content)
+        emoji_list = emoji.emoji_list(message.content)
 
         for _emoji in emoji_list:
             emoji_name = emoji.demojize(_emoji['emoji'])
@@ -76,10 +76,10 @@ class Mstaco:
     async def handle_reaction(self, client, payload):
         if payload.event_type == 'REACTION_ADD':
             emoji_name = emoji.demojize(payload.emoji.name)
-            print ("REACTION:", emoji_name, payload)
+            print("REACTION:", emoji_name, payload)
 
             if emoji_name in TACO:
-                print ("TACOS PARTY:", TACO[emoji_name])
+                print("TACOS PARTY:", TACO[emoji_name])
 
                 channel = await client.fetch_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
@@ -101,6 +101,8 @@ class Mstaco:
     async def handle_direct_command(self, client, message):
         clean = re.compile('<@!.*?>')
         command = re.sub(clean, '', message.content).strip()
+        command = command.split()[1]
+        print ("COMMAND PARSING:", command, type(message.content))
         if command == '/leaderboard':
             msg = use_cases.print_leaderboard()
             await message.channel.send(msg)
