@@ -21,7 +21,9 @@ TACO = {":taco:": 1, ":broccoli:": 1.5, ":medio_taco:": 0.5, ":beer:": 2, ":beer
 
 MIN_RANDOM_REPLY_COUNTER = 5
 MAX_RANDOM_REPLY_COUNTER = 50
-HUGGINGFACE_TOKEN = "api_HUGGINGFACE"
+CHATBOT_TOKEN = "sk-..."
+CHATBOT_NAME = "Godofredo"
+CHATBOT_ROLE = "A beautiful assistant called " + CHATBOT_NAME
 
 ########## PARROT MODULE #########
 
