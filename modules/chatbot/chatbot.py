@@ -1,24 +1,24 @@
-from urllib import response
-
-## HUGGING FACE
-import json
-import requests
+import re
+import openai
 from random import randint
+import functools
+import typing
+import asyncio
 
-from config import HUGGINGFACE_TOKEN, MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER
+from config import MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER, CHATBOT_TOKEN, CHATBOT_ROLE, CHATBOT_NAME
+
+def to_thread(func: typing.Callable) -> typing.Coroutine:
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await asyncio.to_thread(func, *args, **kwargs)
+    return wrapper
 
 class Chatbot:
     random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
 
     def __init__(self):
-        self.API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-3B"
-        self.headers = {"Authorization": "Bearer " + HUGGINGFACE_TOKEN}
-
-    def api_query(self, payload):
-        data = json.dumps(payload)
-        response = requests.request("POST", self.API_URL, headers=self.headers, data=data)
-        print("RESPONSE: ", response)
-        return json.loads(response.content.decode("utf-8"))
+        openai.api_key = CHATBOT_TOKEN
+        pass
 
     async def on_message(self, client, message):
         if message.author == client.user:
@@ -26,27 +26,35 @@ class Chatbot:
 
         # RANDOM REPLIES
         self.random_reply_counter -= 1
-        if self.random_reply_counter < 0:
-            self.random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
-            print ("Next random reply in", self.random_reply_counter, "messages")
-            response = self.evaluate_input(message.content)
-            await message.channel.send(response)
-            return
-
         if client.user.mentioned_in(message):
-            response = self.evaluate_input(message.content.split('> ')[1])
+            response = await self.evaluate_input(message, client)
             await message.channel.send(response)
+        elif self.random_reply_counter < 0:
+            self.random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
+            print("Next random reply in", self.random_reply_counter, "messages")
+            response = await self.evaluate_input(message, client, not_reply_on_fail=True)
+            if len(response) > 0:
+                await message.channel.send(response)
 
-    def evaluate_input(self, input_text):
-        # response = evaluateOneInput(message.content, model=self.generator)
-        #text = "User: " + message.content.split('> ')[1] + "\nBot:"
-        print ("Infer with input: ", input_text)
-        text = self.api_query(input_text)
-        #response = text[0]['generated_text']
-        response = text['generated_text']
-        return response
-        # loop =  asyncio.get_event_loop()
-        # # task = loop.create_task(message.channel.send(response))
-        # # loop.run_until_complete(task)
-        # loop.run_until_complete(asyncio.gather(message.channel.send(response)))
-            
+    def parse_mentions(self, input_text, client):
+        parsed_text = input_text.replace('<@' + str(client.user.id) + '>', CHATBOT_NAME)
+        matches = re.findall(r'\<@([A-Za-z0-9_]+)\>', parsed_text)
+        for match in matches:
+            print("MATCH:", match)
+        return parsed_text
+
+    @to_thread
+    def evaluate_input(self, message, client, not_reply_on_fail=False):
+        bot_input = self.parse_mentions(message.content.replace("\"", "\\\""), client)
+        try:
+            resp = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": CHATBOT_ROLE},
+                    {"role": "user", "content": bot_input},
+                ]
+            )
+        except:
+            return 'Estoy saturado déjame vivir' 
+        print(resp)
+        return resp.choices[0].message.content
