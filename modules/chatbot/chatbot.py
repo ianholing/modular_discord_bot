@@ -53,8 +53,8 @@ class Chatbot:
 
     async def daily_role_change(self):
         seconds_wait = time_utils.seconds_to(RESET_HOUR, 0)
-        print("Changing Role..")
         await asyncio.sleep(seconds_wait)
+        print("Changing Role..")
         while True:
             await self.update_role()
             await asyncio.sleep(86400)
