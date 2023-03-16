@@ -4,8 +4,8 @@ from random import randint
 import functools
 import typing
 import asyncio
-
-from config import MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER, CHATBOT_TOKEN, CHATBOT_ROLE, CHATBOT_NAME
+import utils.time_utils as time_utils
+from config import MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER, CHATBOT_TOKEN, CHATBOT_ROLE, CHATBOT_NAME, CHATBOT_METAROLE, CHATBOT_METAROLE_HELLO, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR
 
 def to_thread(func: typing.Callable) -> typing.Coroutine:
     @functools.wraps(func)
@@ -20,6 +20,44 @@ class Chatbot:
 
     def __init__(self):
         openai.api_key = CHATBOT_TOKEN
+        self.ACTUAL_ROLE = CHATBOT_ROLE
+        pass
+
+    async def on_ready(self, client):
+        self.main_channel = await client.fetch_channel(SHOW_LEADERBOARD_CHANNEL)
+        client.loop.create_task(self.daily_role_change())
+        await self.update_role()
+
+    async def update_role(self):
+        # GET A NEW ROLE
+        resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{'role': 'user', 'content': CHATBOT_METAROLE}]
+        )
+        self.ACTUAL_ROLE = resp.choices[0].message.content
+        print("** NEW ROLE:", self.ACTUAL_ROLE)
+
+        ## SAY HELLO WITH YOUR ROLE
+        messages = [{"role": "system", "content": self.ACTUAL_ROLE},
+                    {'role': 'user', 'content': CHATBOT_METAROLE_HELLO}]
+        resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+
+        txt_resp = resp.choices[0].message.content
+        if resp.choices[0].message.content[:len(CHATBOT_NAME) + 2] == CHATBOT_NAME + ': ':
+            txt_resp = txt_resp[len(CHATBOT_NAME) + 2:]
+
+        await self.main_channel.send(txt_resp)
+
+    async def daily_role_change(self):
+        seconds_wait = time_utils.seconds_to(RESET_HOUR, 0)
+        print("Changing Role..")
+        await asyncio.sleep(seconds_wait)
+        while True:
+            await self.update_role()
+            await asyncio.sleep(86400)
         pass
 
     async def on_message(self, client, message):
@@ -52,7 +90,7 @@ class Chatbot:
     def evaluate_input(self, message, client, not_reply_on_fail=False):
         bot_input = self.parse_mentions(message.content.replace("\"", "\\\""), client)
         try:
-            messages = [{"role": "system", "content": CHATBOT_ROLE}, *self.context]
+            messages = [{"role": "system", "content": self.ACTUAL_ROLE}, *self.context]
             resp = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=messages

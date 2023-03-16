@@ -24,6 +24,8 @@ MAX_RANDOM_REPLY_COUNTER = 50
 CHATBOT_TOKEN = "sk-..."
 CHATBOT_NAME = "Godofredo"
 CHATBOT_ROLE = "A beautiful assistant called " + CHATBOT_NAME
+CHATBOT_METAROLE = "Knowing I want the role: " + CHATBOT_ROLE + ", I want you to generate for me the string and only the string of this role with a mood and an attitude that you invent and that can have bad days but also good days"
+CHATBOT_METAROLE_HELLO = "Hello " + CHATBOT_NAME + ", ¿How are you?"
 
 ########## PARROT MODULE #########
 
