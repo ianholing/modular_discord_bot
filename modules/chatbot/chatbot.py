@@ -27,7 +27,7 @@ class Chatbot:
     async def on_ready(self, client):
         self.main_channel = await client.fetch_channel(SHOW_LEADERBOARD_CHANNEL)
         client.loop.create_task(self.daily_role_change())
-        await self.update_role()
+        #await self.update_role()
 
     async def update_role(self):
         # GET A NEW ROLE
