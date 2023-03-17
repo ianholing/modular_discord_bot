@@ -5,7 +5,8 @@ import functools
 import typing
 import asyncio
 import utils.time_utils as time_utils
-from config import MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER, CHATBOT_TOKEN, CHATBOT_ROLE, CHATBOT_NAME, CHATBOT_METAROLE, CHATBOT_METAROLE_HELLO, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR
+from config import MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER, CHATBOT_TOKEN, CHATBOT_ROLE, CHATBOT_NAME
+from config import CHATBOT_METAROLE, CHATBOT_METAROLE_HELLO, SHOW_LEADERBOARD_CHANNEL, RESET_HOUR, CHATBOT_MODEL
 
 def to_thread(func: typing.Callable) -> typing.Coroutine:
     @functools.wraps(func)
@@ -31,7 +32,7 @@ class Chatbot:
     async def update_role(self):
         # GET A NEW ROLE
         resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=CHATBOT_MODEL,
             messages=[{'role': 'user', 'content': CHATBOT_METAROLE}]
         )
         self.ACTUAL_ROLE = resp.choices[0].message.content
@@ -41,7 +42,7 @@ class Chatbot:
         messages = [{"role": "system", "content": self.ACTUAL_ROLE},
                     {'role': 'user', 'content': CHATBOT_METAROLE_HELLO}]
         resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=CHATBOT_MODEL,
             messages=messages
         )
 
@@ -92,7 +93,7 @@ class Chatbot:
         try:
             messages = [{"role": "system", "content": self.ACTUAL_ROLE}, *self.context]
             resp = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model=CHATBOT_MODEL,
                 messages=messages
             )
         except:
