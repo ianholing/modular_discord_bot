@@ -27,9 +27,9 @@ class Chatbot:
     async def on_ready(self, client):
         self.main_channel = await client.fetch_channel(SHOW_LEADERBOARD_CHANNEL)
         client.loop.create_task(self.daily_role_change())
-        #await self.update_role()
+        await self.update_role(greetings=False)
 
-    async def update_role(self):
+    async def update_role(self, greetings=True):
         # GET A NEW ROLE
         resp = openai.ChatCompletion.create(
             model=CHATBOT_MODEL,
@@ -39,18 +39,19 @@ class Chatbot:
         print("** NEW ROLE:", self.ACTUAL_ROLE)
 
         ## SAY HELLO WITH YOUR ROLE
-        messages = [{"role": "system", "content": self.ACTUAL_ROLE},
-                    {'role': 'user', 'content': CHATBOT_METAROLE_HELLO}]
-        resp = openai.ChatCompletion.create(
-            model=CHATBOT_MODEL,
-            messages=messages
-        )
+        if greetings:
+            messages = [{"role": "system", "content": self.ACTUAL_ROLE},
+                        {'role': 'user', 'content': CHATBOT_METAROLE_HELLO}]
+            resp = openai.ChatCompletion.create(
+                model=CHATBOT_MODEL,
+                messages=messages
+            )
 
-        txt_resp = resp.choices[0].message.content
-        if resp.choices[0].message.content[:len(CHATBOT_NAME) + 2] == CHATBOT_NAME + ': ':
-            txt_resp = txt_resp[len(CHATBOT_NAME) + 2:]
+            txt_resp = resp.choices[0].message.content
+            if resp.choices[0].message.content[:len(CHATBOT_NAME) + 2] == CHATBOT_NAME + ': ':
+                txt_resp = txt_resp[len(CHATBOT_NAME) + 2:]
 
-        await self.main_channel.send(txt_resp)
+            await self.main_channel.send(txt_resp)
 
     async def daily_role_change(self):
         seconds_wait = time_utils.seconds_to(RESET_HOUR, 0)
