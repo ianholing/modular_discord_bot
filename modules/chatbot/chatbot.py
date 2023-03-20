@@ -26,8 +26,8 @@ class Chatbot:
 
     async def on_ready(self, client):
         self.main_channel = await client.fetch_channel(SHOW_LEADERBOARD_CHANNEL)
+        await self.update_role(greetings=False)
         client.loop.create_task(self.daily_role_change())
-        await self.update_role(greetings=True)
 
     async def update_role(self, greetings=True):
         # GET A NEW ROLE
@@ -36,7 +36,7 @@ class Chatbot:
             messages=[{'role': 'user', 'content': CHATBOT_METAROLE}]
         )
         self.ACTUAL_ROLE = resp.choices[0].message.content
-        print("** NEW ROLE:", self.ACTUAL_ROLE)
+        print("\n** NEW ROLE:", self.ACTUAL_ROLE)
         await asyncio.sleep(5)
 
         ## SAY HELLO WITH YOUR ROLE
@@ -57,8 +57,8 @@ class Chatbot:
     async def daily_role_change(self):
         seconds_wait = time_utils.seconds_to(RESET_HOUR, 0) + 5
         await asyncio.sleep(seconds_wait)
-        print("Changing Role..")
         while True:
+            print("\nChanging Role..")
             await self.update_role()
             await asyncio.sleep(86400)
         pass
@@ -66,7 +66,7 @@ class Chatbot:
     async def on_message(self, client, message):
         self.context.append({"role": "user", "content": message.author.name + ": " + self.parse_mentions(message.content.replace("\"", "\\\""), client)})
         self.context = self.context[-self.context_limit:]
-        print("ACTUAL CONTEXT:", self.context)
+        print("\nACTUAL CONTEXT:", self.context)
         if message.author == client.user:
             return
 
@@ -77,7 +77,7 @@ class Chatbot:
             await message.channel.send(response)
         elif self.random_reply_counter < 0:
             self.random_reply_counter = randint(MIN_RANDOM_REPLY_COUNTER, MAX_RANDOM_REPLY_COUNTER)
-            print("Next random reply in", self.random_reply_counter, "messages")
+            print("\nNext random reply in", self.random_reply_counter, "messages")
             response = await self.evaluate_input(message, client, not_reply_on_fail=True)
             if len(response) > 0:
                 await message.channel.send(response)
@@ -86,7 +86,7 @@ class Chatbot:
         parsed_text = input_text.replace('<@' + str(client.user.id) + '>', CHATBOT_NAME)
         matches = re.findall(r'\<@([A-Za-z0-9_]+)\>', parsed_text)
         for match in matches:
-            print("MATCH:", match)
+            print("\nMATCH:", match)
         return parsed_text
 
     @to_thread
@@ -100,7 +100,7 @@ class Chatbot:
             )
         except:
             return 'Estoy saturado déjame vivir' 
-        print(resp)
+        print("\n" + resp)
         txt_resp = resp.choices[0].message.content
         if resp.choices[0].message.content[:len(CHATBOT_NAME)+2] == CHATBOT_NAME + ': ':
             txt_resp = txt_resp[len(CHATBOT_NAME)+2:]
