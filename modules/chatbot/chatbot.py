@@ -100,7 +100,7 @@ class Chatbot:
             )
         except:
             return 'Estoy saturado déjame vivir' 
-        print("\n" + resp)
+        print(resp)
         txt_resp = resp.choices[0].message.content
         if resp.choices[0].message.content[:len(CHATBOT_NAME)+2] == CHATBOT_NAME + ': ':
             txt_resp = txt_resp[len(CHATBOT_NAME)+2:]
