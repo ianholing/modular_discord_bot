@@ -55,7 +55,7 @@ class Chatbot:
             await self.main_channel.send(txt_resp)
 
     async def daily_role_change(self):
-        seconds_wait = time_utils.seconds_to(RESET_HOUR, 0)
+        seconds_wait = time_utils.seconds_to(RESET_HOUR, 0) + 5
         await asyncio.sleep(seconds_wait)
         print("Changing Role..")
         while True:
