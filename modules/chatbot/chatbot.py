@@ -37,7 +37,7 @@ class Chatbot:
         )
         self.ACTUAL_ROLE = resp.choices[0].message.content
         print("** NEW ROLE:", self.ACTUAL_ROLE)
-        await asyncio.sleep(61)
+        await asyncio.sleep(5)
 
         ## SAY HELLO WITH YOUR ROLE
         if greetings:
